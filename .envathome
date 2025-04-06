@@ -1,0 +1,97 @@
+APP_NAME=PGI
+APP_ENV=local
+APP_KEY=base64:tvHZSbjlpSIiY7uuCOsAyJ3xIz/BYaHmabItWrV/smY=
+APP_DEBUG=true
+#APP_URL=http://localhost
+APP_URL=http://127.0.0.1:8087
+APP_CODE=PGI
+
+LOG_CHANNEL=stack
+LOG_LEVEL=debug
+
+DB_CONNECTION=pgsql
+
+#dev
+#DB_HOST=192.168.1.106
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_DATABASE=database_name_5
+DB_USERNAME=phillip
+DB_PASSWORD=
+#
+API_BASE_URL=https://uat.phillipbank.com.kh:4443/idm-pg-uat/
+API_PGI_BASE_URL=http://192.168.100.13:8385/ims/
+IDM_BASE_URL=https://uat.phillipbank.com.kh:4443/idm-pg-uat/
+IDM_CLIENT_SECRET=x15Qo8M8TQt2wnSQJpkxGvro+/hZoXtd8YeMsnEdy/xGIAJyqsy9KTYyQaT5IR5J
+
+#UAT
+# DB_HOST=192.168.1.106
+# DB_PORT=5445
+# DB_DATABASE=pgi_staging
+# DB_USERNAME=phillip
+#
+# DB_PASSWORD=bkg_PassS3cure
+#
+# API_BASE_URL=https://uat.phillipbank.com.kh:4443/idm-pg/
+# API_PGI_BASE_URL=http://192.168.100.13:8384/ims/
+# IDM_BASE_URL=https://uat.phillipbank.com.kh:4443/idm-pg/
+# IDM_CLIENT_SECRET=x15Qo8M8TQt2wnSQJpkxGvro+/hZoXtd8YeMsnEdy/xGIAJyqsy9KTYyQaT5IR5J
+#
+# API_BASE_URL=https://pgi.phillipbank.com.kh:8081/idm/
+# API_PGI_BASE_URL=https://pgi.phillipbank.com.kh:8082/ims/
+# IDM_BASE_URL=https://pgi.phillipbank.com.kh:8081/idm/
+# IDM_CLIENT_SECRET=DjUrd3+DM07vk7gJqXbOTu7ZmQ/prL2VDRDTSUGP0gq03bAGpXZaHyvL0JJXWJU/
+
+IDM_CLIENT_ID=pgi
+IDM_GRANT_TYPE=password
+IDM_APP_CODE=PGI
+
+BROADCAST_DRIVER=log
+CACHE_DRIVER=file
+QUEUE_CONNECTION=sync
+SESSION_DRIVER=file
+SESSION_LIFETIME=240
+
+MEMCACHED_HOST=127.0.0.1
+
+REDIS_HOST=127.0.0.1
+REDIS_PASSWORD=null
+REDIS_PORT=6379
+
+MAIL_MAILER=smtp
+MAIL_HOST=mailhog
+MAIL_PORT=1025
+MAIL_USERNAME=null
+MAIL_PASSWORD=null
+MAIL_ENCRYPTION=null
+MAIL_FROM_ADDRESS=null
+MAIL_FROM_NAME="${APP_NAME}"
+
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+AWS_DEFAULT_REGION=us-east-1
+AWS_BUCKET=
+
+PUSHER_APP_ID=
+PUSHER_APP_KEY=
+PUSHER_APP_SECRET=
+PUSHER_APP_CLUSTER=mt1
+
+MIX_PUSHER_APP_KEY="${PUSHER_APP_KEY}"
+MIX_PUSHER_APP_CLUSTER="${PUSHER_APP_CLUSTER}"
+
+WKHTML_PDF_BINARY="\"\"D:\\wkhtmltopdf\\wkhtmltopdf.exe\"\""
+WKHTML_IMG_BINARY="\"\"D:\\wkhtmltopdf\\wkhtmltoimage.exe\"\""
+
+#WKHTML_PDF_BINARY="\"\"D:\\Project\\wkhtmltox\\bin\\wkhtmltopdf.exe\"\""
+#WKHTML_IMG_BINARY="\"\"D:\\Project\\wkhtmltox\\bin\\wkhtmltoimage.exe\"\""
+
+#WKHTML_PDF_BINARY="\"\"C:\\laragon\\www\\my_document\\wkhtmltox\\wkhtmltox\\bin\\wkhtmltopdf.exe\"\""
+#WKHTML_IMG_BINARY="\"\"C:\\laragon\\www\\my_document\\wkhtmltox\\wkhtmltox\\bin\\wkhtmltoimage.exe\"\""
+
+SM_DB_CONNECTION=pgsql
+
+#API_INSURANCE_SERVICE_URL=http://192.168.100.13:8054/ins
+
+
+

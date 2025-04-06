@@ -1,0 +1,6 @@
+
+const TRAVEL_PACKAGE = {INDIVIDUAL: "INDIV", GROUP: "GROUP"}
+
+export {
+  TRAVEL_PACKAGE
+};
