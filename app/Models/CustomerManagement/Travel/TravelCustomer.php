@@ -3,7 +3,7 @@
 namespace App\Models\CustomerManagement\Travel;
 
 use App\Models\CustomerManagement\Customer;
-
+use Illuminate\Support\Facades\DB;
 class TravelCustomer extends Customer
 {
   public function travelInfo()

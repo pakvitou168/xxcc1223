@@ -1,5 +1,5 @@
 <template>
-  <div class="hidden dropdown">
+  <div class="dropdown">
     <button
       class="dropdown-toggle btn btn-primary shadow-md mr-2"
       title="Print"

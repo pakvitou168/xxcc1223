@@ -228,40 +228,51 @@ class PolicyServiceController extends Controller
         ];
     }
 
-    /**
-     * Print Policy Invoice.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Insurance\Policy  $policy
-     * @return \Illuminate\Http\Response
-     */
     public function downloadInvoice($id, $withSignature = null)
     {
-        $invoice = InvoiceNote::getInvoiceData($id);
-        $bank_list = BankInformation::where('status', 'ACT')->where('default', true)->get();
 
-        $policy = Policy::find($id);
-        $invoice->address = @$policy->dataMaster->customer->info()->address;
-        if ($policy->status == 'APV' && $withSignature) {
-            $signature = UserFile::select('file_url')->where('user_id', $policy->approved_by)->where('file_type', 'SIGNATURE')->first();
-            if ($signature)
-                if (!$signature->file_url)
-                    $signature = null;
+        try {
+            $invoice = InvoiceNote::getInvoiceData($id);
+            if (!$invoice) {
+                return response()->json(['error' => 'Invoice data not found'], 404);
+            }
+            $policy = Policy::with(['dataMaster.customer'])->findOrFail($id);
+            $invoice->address = $policy->address();
+            $bank_list = cache()->remember('default_active_banks', 60*60, function() {
+                return BankInformation::where('status', 'ACT')
+                    ->where('default', true)
+                    ->get();
+            });
+            $signature = $policy->signature($withSignature);
+
+            $pdf = App::make('snappy.pdf.wrapper');
+            $pdf->setOption('title', 'Invoice');
+            $pdf->loadView('pdf.policies.travel.invoice', [
+                'invoice' => $invoice,
+                'bank_list' => $bank_list,
+                'signature' => $signature
+            ]);
+
+            $pdf->setOption('page-size', 'a4');
+            $pdf->setOption('disable-smart-shrinking', true);
+            $pdf->setOption('margin-top', 33);
+            $pdf->setOption('margin-bottom', 27);
+            $pdf->setOption('margin-left', 15);
+            $pdf->setOption('margin-right', 15);
+
+            return $pdf->stream($invoice->inv_cdn_no . '.pdf');
+
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['error' => 'Policy not found'], 404);
+        } catch (\Exception $e) {
+            \Log::error('Invoice generation failed', [
+                'policy_id' => $id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json(['error' => 'Failed to generate invoice'], 500);
         }
-
-        $pdf = App::make('snappy.pdf.wrapper');
-
-        $pdf->setOption('title', 'Invoice');
-        $pdf->loadView('pdf.policies.travel.invoice', ['invoice' => $invoice, 'bank_list' => $bank_list, 'signature' => $signature ?? null]);
-
-        $pdf->setOption('page-size', 'a4');
-        $pdf->setOption('disable-smart-shrinking', true);
-        $pdf->setOption('margin-top', 33);
-        $pdf->setOption('margin-bottom', 27);
-        $pdf->setOption('margin-left', 15);
-        $pdf->setOption('margin-right', 15);
-
-        return $pdf->stream($invoice->inv_cdn_no . '.pdf');
     }
 
     private function getSignature(DataMaster $travel)
@@ -331,9 +342,12 @@ class PolicyServiceController extends Controller
 
     public function downloadPolicySchedule(Request $request, Policy $policy, $lang)
     {
+        /*mock*/
+        $policy = Policy::find(78);
+        $lang = 'en';
+        /*mock*/
         App::setLocale($lang);
-        $travel = $this->policyDetailService->getDataDetail($policy->data_id);
-        // fix error when there is a record but empty file_url
+        $travel = $this->policyDetailService->getDataDetail($policy->id);
         if (isset($travel['signature']))
             if (!$travel['signature']->file_url)
                 $travel['signature'] = null;
@@ -342,9 +356,9 @@ class PolicyServiceController extends Controller
         $documentNo = $travel['policy_no'] ?? '';
         $pdf = App::make('snappy.pdf.wrapper');
         $pdf->loadView('pdf.policies.travel.travel', compact('travel'));
-
         $pdf->setOption('title', 'PGI');
-
+        $pdf->setOption('page-size', 'a4');
+        $pdf->setOption('disable-smart-shrinking', true);
         $pdf->setOption('margin-top', 36);
         $pdf->setOption('margin-bottom', 27);
         $pdf->setOption('margin-left', 0);

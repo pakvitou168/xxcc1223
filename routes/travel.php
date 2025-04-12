@@ -17,6 +17,28 @@ use App\Http\Controllers\Endorsement\TravelEndorsementController;
 use App\Http\Controllers\Endorsement\TravelEndorsementServiceController;
 use \App\Http\Controllers\ProductConfiguration\ClauseMaintenance\Travel\ClauseMaintenanceServiceController;
 
+
+Route::get('test', function () {
+    $mock_policy = \App\Models\Travel\Policy\Policy::whereHas('dataMaster', function($q) {
+        $q->whereHas('customer');
+    })
+        ->whereHas('invoiceNote')
+        ->with([
+            'dataMaster.customer',
+            'invoiceNote',
+        ])
+        ->whereNotNull("approved_by")
+        ->first();
+    $id = $mock_policy->id;
+    $withSignature="withSignature";
+     dd($mock_policy);
+    dd(213);
+
+});
+Route::get('invoice/{id}/{withSignature?}', [PolicyServiceController::class, 'downloadInvoice']);
+
+Route::get('/{policy}/download-policy-schedule/{lang}', [PolicyServiceController::class, 'downloadPolicySchedule']);
+
 Route::group(['middleware' => 'authenticated:security'], function () {
     Route::prefix('/quotation-service')->group(function () {
         Route::get('/selections', [QuotationController::class, 'selection']);
@@ -93,7 +115,7 @@ Route::group(['middleware' => 'authenticated:security'], function () {
             Route::get('{policy}/get-signature', [PolicyServiceController::class, 'getSignatureByPolicy']);
             Route::get('{id}/export-insured-persons/{document_no}', [PolicyServiceController::class, 'exportInsuredPersons']);
             Route::get('/{id}/download-invoice/{withSignature?}', [PolicyServiceController::class, 'downloadInvoice']);
-            Route::get('/{id}/download-hs-certificate', [PolicyServiceController::class, 'downloadHSCertificate']);
+            Route::get('/{id}/download-travel-certificate', [PolicyServiceController::class, 'downloadCertificate']);
             Route::get('/{policy}/download-policy-schedule/{lang}', [PolicyServiceController::class, 'downloadPolicySchedule']);
             //Route::put('/update-submit-status/{policy}', [PolicyServiceController::class, 'updateSubmitStatus']);
             Route::get('export-reinsurance/{id}/{product_code}', [PolicyServiceController::class, 'exportReinsurance']);

@@ -363,7 +363,9 @@ const getClause = () => {
   return clauseService.clauseType('TRAVEL').then((res) => {
     clauses.value = res.data;
   }).catch(err => {
-    notify(err.response?.data?.message || ERROR_MESSAGE.value, "error", "bottom-right");
+    // notify(err.response?.data?.message || ERROR_MESSAGE.value, "error", "bottom-right");
+    console.error(err);
+
   })
       .finally(() => loading.value = false);
 };

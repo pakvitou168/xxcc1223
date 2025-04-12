@@ -61,7 +61,8 @@ class EndorsementView extends Model
         return $this->belongsTo(Policy::class, 'id', 'id');
     }
 
-    public function travel()
+    public function
+    travel()
     {
         return $this->belongsTo(DataMaster::class, 'data_id', 'id');
     }

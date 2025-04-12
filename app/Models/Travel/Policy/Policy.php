@@ -4,9 +4,15 @@ namespace App\Models\Travel\Policy;
 
 use App\Models\Travel\Policy\Insurance\Endorsement;
 use App\Models\Travel\Policy\Insurance\ReinsuranceData;
+use App\Models\Travel\Policy\Invoice\InvoiceNote;
 use App\Models\User;
+use App\Models\UserManagement\User\UserFile;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\DB;
+use KhmerDateTime\KhmerDateTime;
 
 class Policy extends Model
 {
@@ -71,6 +77,11 @@ class Policy extends Model
         return $this->belongsTo(DataMaster::class, 'data_id');
     }
 
+    public function invoiceNote()
+    {
+        return $this->hasOne(InvoiceNote::class, 'policy_id');
+    }
+
     public function quotation()
     {
         return $this->belongsTo(Quotation::class, 'quotation_id');
@@ -92,6 +103,55 @@ class Policy extends Model
             return true;
         }
         return false;
+    }
+
+    public function createdBy()
+    {
+        return $this->belongsTo(\App\Models\UserManagement\User\User::class, 'created_by');
+    }
+
+    public function updatedBy()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    public function issuedByName($issued_by_id) {
+        return User::where('id', $issued_by_id)->value('full_name');
+    }
+
+    public function insuredPeriod()
+    {
+        $effectiveDateFrom = App::getLocale() !== 'km' ? Carbon::parse($this->effective_date_from)->format('d/F/Y') : KhmerDateTime::parse($this?->effective_date_from)->format('LL');
+        $effectiveDateTo = App::getLocale() !== 'km' ? Carbon::parse($this->effective_date_to)->format('d/F/Y') : KhmerDateTime::parse($this?->effective_date_to)->format('LL');
+        return $this->effective_day . " " . __('Days') . ' - ' . __('From') . ' ' . $effectiveDateFrom . ' ' . __('To') . ' ' . "$effectiveDateTo (" . __('Both Days Inclusive') . ')';
+    }
+    public function address()
+    {
+        $address = null;
+        if ($this->dataMaster && $customer = $this->dataMaster->customer) {
+            $getCustomerInfo = collect(DB::select('select * from ins_get_customer_info(?)', [ $customer->customer_no]))->first();
+            if($getCustomerInfo) {
+                $address = $getCustomerInfo->address;
+            }
+        }
+        return $address;
+    }
+
+    public function signature($withSignature = null)
+    {
+        $signature = null;
+        if ($this->status == 'APV' && $withSignature) {
+            $signature = UserFile::select('file_url')
+                ->where('user_id', $this->approved_by)
+                ->where('file_type', 'SIGNATURE')
+                ->first();
+
+            if ($signature && empty($signature->file_url)) {
+                $signature = null;
+            }
+        }
+
+        return $signature;
     }
 
 
