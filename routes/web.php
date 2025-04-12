@@ -87,6 +87,9 @@ use App\Http\Controllers\ProductConfiguration\ComponentFormulaElement\CompFrmEle
 use App\Http\Controllers\Quotation\AutoController;
 use Plb\SecurityManagement\Http\Controllers\LoginController;
 
+///abc
+/// sadfdasfa
+
 // Auth::routes();
 Route::get('/migrate-sm', [SMController::class, 'migrate']);
 // Route::group(['middleware' => 'auth'], function () {
